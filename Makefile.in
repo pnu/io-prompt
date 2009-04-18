@@ -2,7 +2,7 @@ PERL6=<PERL6>
 PERL6LIB=<PERL6LIB>
 RAKUDO_DIR=<RAKUDO_DIR>
 
-SOURCES=lib/Example/Hello.pm
+SOURCES=lib/IO/Prompt.pm
 
 
 PIRS=$(SOURCES:.pm=.pir)
