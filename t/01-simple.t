@@ -1,43 +1,57 @@
 use IO::Prompt;
 use Test;
 
-my @ask_yn_tests = (
-#    question default       output        answer   expected
-[    'da1?',  Bool::True,  'da1? [Y/n] ', 'yai',   Bool::True  ],
-[    'da2?',  Bool::False, 'da2? [y/N] ', 'yai',   Bool::True  ],
-[    'da3?',  undef,       'da3? [y/n] ', 'yai',   Bool::True  ],
-[    'da4?',               'da4? [y/n] ', 'yai',   Bool::True  ],
-[    'db1?',  Bool::True,  'db1? [Y/n] ', 'Y',     Bool::True  ],
-[    'db2?',  Bool::False, 'db2? [y/N] ', 'Y',     Bool::True  ],
-[    'db3?',  undef,       'db3? [y/n] ', 'Y',     Bool::True  ],
-[    'db4?',               'db4? [y/n] ', 'Y',     Bool::True  ],
+my @tests = (
+##  Basic y/n questions
+##  method  quest   default         output         answer expected
+[ q{ask_yn( 'da1?', Bool::True  )}, 'da1? [Y/n] ', 'yai', Bool::True  ],
+[ q{ask_yn( 'da2?', Bool::False )}, 'da2? [y/N] ', 'yai', Bool::True  ],
+[ q{ask_yn( 'da3?', undef       )}, 'da3? [y/n] ', 'yai', Bool::True  ],
+[ q{ask_yn( 'da4?'              )}, 'da4? [y/n] ', 'yai', Bool::True  ],
+[ q{ask_yn( 'db1?', Bool::True  )}, 'db1? [Y/n] ', 'Y',   Bool::True  ],
+[ q{ask_yn( 'db2?', Bool::False )}, 'db2? [y/N] ', 'Y',   Bool::True  ],
+[ q{ask_yn( 'db3?', undef       )}, 'db3? [y/n] ', 'Y',   Bool::True  ],
+[ q{ask_yn( 'db4?'              )}, 'db4? [y/n] ', 'Y',   Bool::True  ],
 
-[    'da5?',  Bool::True,  'da5? [Y/n] ', 'nai',   Bool::False ],
-[    'da6?',  Bool::False, 'da6? [y/N] ', 'nai',   Bool::False ],
-[    'da7?',  undef,       'da7? [y/n] ', 'nai',   Bool::False ],
-[    'da8?',               'da8? [y/n] ', 'nai',   Bool::False ],
-[    'db5?',  Bool::True,  'db5? [Y/n] ', 'N',     Bool::False ],
-[    'db6?',  Bool::False, 'db6? [y/N] ', 'N',     Bool::False ],
-[    'db7?',  undef,       'db7? [y/n] ', 'N',     Bool::False ],
-[    'db8?',               'db8? [y/n] ', 'N',     Bool::False ],
+[ q{ask_yn( 'da5?', Bool::True  )}, 'da5? [Y/n] ', 'nai', Bool::False ],
+[ q{ask_yn( 'da6?', Bool::False )}, 'da6? [y/N] ', 'nai', Bool::False ],
+[ q{ask_yn( 'da7?', undef       )}, 'da7? [y/n] ', 'nai', Bool::False ],
+[ q{ask_yn( 'da8?'              )}, 'da8? [y/n] ', 'nai', Bool::False ],
+[ q{ask_yn( 'db5?', Bool::True  )}, 'db5? [Y/n] ', 'N',   Bool::False ],
+[ q{ask_yn( 'db6?', Bool::False )}, 'db6? [y/N] ', 'N',   Bool::False ],
+[ q{ask_yn( 'db7?', undef       )}, 'db7? [y/n] ', 'N',   Bool::False ],
+[ q{ask_yn( 'db8?'              )}, 'db8? [y/n] ', 'N',   Bool::False ],
 
-[    'da9?',  Bool::True,  'da9? [Y/n] ', '',      Bool::True  ],
-[    'd10?',  Bool::False, 'd10? [y/N] ', '',      Bool::False ],
+[ q{ask_yn( 'da9?', Bool::True  )}, 'da9? [Y/n] ', '',    Bool::True  ],
+[ q{ask_yn( 'd10?', Bool::False )}, 'd10? [y/N] ', '',    Bool::False ],
 
-# should ask again with this prompt, when answer is bad
-# or empty when there is no default specified
-[    'qa9?',  undef,       'Please enter a valid response', '',      undef ],
-[    'q10?',               'Please enter a valid response', '',      undef ],
-[    'wa9?',  Bool::True,  'Please enter a valid response', 'Daa',   undef ],
-[    'w10?',  Bool::False, 'Please enter a valid response', 'Daa',   undef ],
-[    'wa9?',  undef,       'Please enter a valid response', 'Daa',   undef ],
-[    'w10?',               'Please enter a valid response', 'Daa',   undef ],
+[ q{ask_yn( 'qa9?', undef       )}, 'Please enter yes or no', '',    undef ],
+[ q{ask_yn( 'q10?'              )}, 'Please enter yes or no', '',    undef ],
+[ q{ask_yn( 'wa9?', Bool::True  )}, 'Please enter yes or no', 'Daa', undef ],
+[ q{ask_yn( 'w10?', Bool::False )}, 'Please enter yes or no', 'Daa', undef ],
+[ q{ask_yn( 'wa9?', undef       )}, 'Please enter yes or no', 'Daa', undef ],
+[ q{ask_yn( 'w10?'              )}, 'Please enter yes or no', 'Daa', undef ],
+
+##  Num tests
+##  method   quest  default   output          answer   expected
+[ q{ask_num( 'n1?', 10.01 )}, 'n1? [10.01] ', '42.42', 42.42  ],
+[ q{ask_num( 'n2?', 20.02 )}, 'n2? [20.02] ', '24.24', 24.24  ],
+[ q{ask_num( 'n3?'        )}, 'n3? [Num] ',   '11.11', 11.11  ],
+
+[ q{ask_int( 'i1?', 10 )},    'i1? [10] ',    '42',    42 ],
+[ q{ask_int( 'i2?', 20 )},    'i2? [20] ',    '24',    24 ],
+[ q{ask_int( 'i3?'     )},    'i3? [Int] ',   '11',    11 ],
+
+[ q{ask_num( 'nA?', 10.01 )}, 'Please enter a valid number',  'aaa', undef ],
+[ q{ask_num( 'nB?         )}, 'Please enter a valid number',  '',    undef ],
+[ q{ask_int( 'iA?', 10    )}, 'Please enter a valid integer', 'aaa', undef ],
+[ q{ask_int( 'iB?         )}, 'Please enter a valid integer', '',    undef ],
 
 );
 
 ## One test for loading the package, two tests for each row above:
 ## 1) expected result value, 2) expected console output
-plan 1 + @ask_yn_tests * 2;
+plan 1 + @tests * 2;
 
 ## Subclass a testable version
 class IO::Prompt::Testable is IO::Prompt {
@@ -54,42 +68,34 @@ class IO::Prompt::Testable is IO::Prompt {
 }
 
 my $prompt = IO::Prompt::Testable.new();
+
 isa_ok( $prompt, 'IO::Prompt', 'create object' );
 
-for @ask_yn_tests -> @row {
-    my ($question, $default, $output, $answer, $expected);
+for @tests -> @row {
+    my ($call, $output, $answer, $expected) = @row;
 
-    ## ask_yn can be called with 4 or 5 arguments
-    ## (with or without the default)
-    if @row == 5 {
-        ($question, $default, $output, $answer, $expected) = @row;
-    } elsif @row == 4 {
-        ($question, $output, $answer, $expected) = @row;
-    }
-
-    ## Setup the answer "the user" will give,
+    ## Setup the answer "the user" will give
     ## see ::Testable class specs above.
     $prompt.do_prompt_answer = $answer;
 
+    ## Setup the call. Cannot use symbolic
+    ## coderef see Radudo RT #64848
+    my $strtoeval = '$prompt.' ~ $call;
+    my $result = eval( $strtoeval );
+
     ## Test for the expected return value
-    if @row == 5 {
-        is(
-            $prompt.ask_yn( $question, $default ),
-            $expected,
-            "question '$question' default '$default' answer '$answer' :: expected '$expected'"
-        );
-    } elsif @row == 4 {
-        is(
-            $prompt.ask_yn( $question ),
-            $expected,
-            "question '$question' answer '$answer' :: expected '$expected'"
-        );
-    }
+    is(
+        $result,
+        $expected,
+        "call {$call.perl} answer {$answer.perl}" ~
+        " => {$result.perl} expected {$expected.perl}"
+    );
 
     ## Test for the expected console output
     is(
         $prompt.do_input_buffer,
         $output,
-        "question '$question' default '$default' :: output '$output'"
+        "call {$call.perl} => {$prompt.do_input_buffer.perl}" ~
+        " expected {$output.perl}"
     );
 }

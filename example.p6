@@ -4,6 +4,18 @@ use IO::Prompt;
 
 my $a;
 
+#### Numericals ####
+
+## Procedural style
+$a = IO::Prompt.ask_num( "Defaults to 42?", 42 );
+say $a.perl;
+
+$a = IO::Prompt.ask_int( "No default?" );
+say $a.perl;
+
+
+#### Yes/No ####
+
 ## Procedural style
 $a = IO::Prompt.ask_yn( "Defaults to false?", Bool::False );
 say $a.perl;
