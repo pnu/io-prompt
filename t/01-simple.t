@@ -2,7 +2,6 @@ use IO::Prompt;
 use Test;
 
 my @ask_yn_tests = (
-
 #    question default       output        answer   expected
 [    'da1?',  Bool::True,  'da1? [Y/n] ', 'yai',   Bool::True  ],
 [    'da2?',  Bool::False, 'da2? [y/N] ', 'yai',   Bool::True  ],
@@ -36,45 +35,60 @@ my @ask_yn_tests = (
 
 );
 
+## One test for loading the package, two tests for each row above:
+## 1) expected result value, 2) expected console output
 plan 1 + @ask_yn_tests * 2;
 
-my $prompt = IO::Prompt.new();
+## Subclass a testable version
+class IO::Prompt::Testable is IO::Prompt {
+    has $.do_input_buffer  is rw = '';
+    has $.do_prompt_answer is rw = '';
+    our Bool method do_say( Str $question ) {
+        $.do_input_buffer = $question;
+        return Bool::False; # do not continue
+    }
+    our Str method do_prompt( Str $question ) {
+        $.do_input_buffer = $question;
+        return $.do_prompt_answer;
+    }
+}
+
+my $prompt = IO::Prompt::Testable.new();
 isa_ok( $prompt, 'IO::Prompt', 'create object' );
 
 for @ask_yn_tests -> @row {
     my ($question, $default, $output, $answer, $expected);
 
+    ## ask_yn can be called with 4 or 5 arguments
+    ## (with or without the default)
     if @row == 5 {
         ($question, $default, $output, $answer, $expected) = @row;
     } elsif @row == 4 {
         ($question, $output, $answer, $expected) = @row;
     }
 
-    my $prompter_input;
-    $prompt.do_prompt = sub ( Str $q) {
-        $prompter_input = $q;
-        return $answer;
-    };
-    $prompt.do_say = sub ( Str $q) {
-        $prompter_input = $q;
-        return Bool::False;
-    };
+    ## Setup the answer "the user" will give,
+    ## see ::Testable class specs above.
+    $prompt.do_prompt_answer = $answer;
 
+    ## Test for the expected return value
     if @row == 5 {
-    is(
-        $prompt.ask_yn( $question, $default ),
-        $expected,
-        "question '$question' default '$default' answer '$answer' :: expected '$expected'"
-    );
+        is(
+            $prompt.ask_yn( $question, $default ),
+            $expected,
+            "question '$question' default '$default' answer '$answer' :: expected '$expected'"
+        );
     } elsif @row == 4 {
-    is(
-        $prompt.ask_yn( $question ),
-        $expected,
-        "question '$question' answer '$answer' :: expected '$expected'"
-    );
+        is(
+            $prompt.ask_yn( $question ),
+            $expected,
+            "question '$question' answer '$answer' :: expected '$expected'"
+        );
     }
+
+    ## Test for the expected console output
     is(
-        $prompter_input,
+        $prompt.do_input_buffer,
         $output,
         "question '$question' default '$default' :: output '$output'"
     );

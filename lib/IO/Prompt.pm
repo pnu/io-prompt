@@ -1,46 +1,39 @@
 class IO::Prompt;
 
-has $.do_prompt is rw = sub ( Str $question? ) {
+our Str method do_prompt ( Str $question? ) {
     return defined $question ?? prompt($question)
                              !! prompt('');
-};
+}
 
-has $.do_say is rw = sub ( Str $output ) {
+our Bool method do_say ( Str $output ) {
     say $output;
     return Bool::True;
-};
+}
+
+our $.lang_prompt_Yn = ' [Y/n] ';
+our $.lang_prompt_yN = ' [y/N] ';
+our $.lang_prompt_yn = ' [y/n] ';
+our $.lang_prompt_match_y = m/ ^^ <[yY]> /;
+our $.lang_prompt_match_n = m/ ^^ <[nN]> /;
+our $.lang_prompt_retry = 'Please enter a valid response';
 
 method ask_yn ( Str $message, Bool $default? ) {
-
     my $q = defined $default
-            ?? $default ?? '[Y/n]'
-                        !! '[y/N]'
-            !! '[y/n]';
-
-    $q = $message ~ (defined $q ?? " $q " !! ' ');
+            ?? $default ?? $.lang_prompt_Yn
+                        !! $.lang_prompt_yN
+            !! $.lang_prompt_yn;
 
     my $result;
     loop {
-        my Str $response = defined $.do_prompt
-            ?? &.do_prompt( $q )
-            !!      prompt( $q );
+        my Str $response = self.do_prompt( $message ~ $q );
 
-        given lc $response {
-            when m/ ^^ y / { $result = Bool::True }
-            when m/ ^^ n / { $result = Bool::False }
-            when ''        { $result = $default }
+        given $response {
+            when $.lang_prompt_match_y { $result = Bool::True }
+            when $.lang_prompt_match_n { $result = Bool::False }
+            when ''                    { $result = $default }
         }
         last if defined $result;
-
-        my $reprompt = 'Please enter a valid response';
-        my $said;
-        if defined $.do_say {
-            $said = &.do_say( $reprompt );
-        } else {
-            say $reprompt;
-            $said = Bool::True;
-        }
-        last if not $said;
+        last if not self.do_say( $.lang_prompt_retry );
     }
  
    return $result;

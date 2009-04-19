@@ -4,27 +4,6 @@ use IO::Prompt;
 
 my $a;
 
-## OO style
-my $prompt = IO::Prompt.new();
-$a = $prompt.ask_yn( "Defaults to false?", Bool::False );
-say $a.perl;
-
-## You can define the sub that will do the prompting
-$prompt.do_say = sub (Str $q) {
-    say "Saying '$q'";
-    return Bool::False;
-};
-$a = $prompt.ask_yn( "Defaults to false?", Bool::False );
-say $a.perl;
-
-## You can define the sub that will do the prompting
-$prompt.do_prompt = sub (Str $q) {
-    say "Prompting '$q', answer is 'yai'";
-    return "yai"
-};
-$a = $prompt.ask_yn( "Defaults to false?", Bool::False );
-say $a.perl;
-
 ## Procedural style
 $a = IO::Prompt.ask_yn( "Defaults to false?", Bool::False );
 say $a.perl;
@@ -33,4 +12,27 @@ $a = IO::Prompt.ask_yn( "Defaults to true?", Bool::True );
 say $a.perl;
 
 $a = IO::Prompt.ask_yn( "No default?" );
+say $a.perl;
+
+## OO style
+my $prompt = IO::Prompt.new();
+$a = $prompt.ask_yn( "OO style, defaults to false?", Bool::False );
+say $a.perl;
+
+## You can override the IO methods for testing purposes
+class IO::Prompt::Testable is IO::Prompt {
+    our Bool method do_say( Str $question ) {
+        say "Testable saying    '$question'";
+        say 'Please do not continue questioning';
+        return Bool::False; # do not continue
+    }
+    our Str method do_prompt( Str $question ) {
+        say "Testable saying    '$question'";
+        say "Testable answering 'daa'";
+        return 'daa';
+    }
+}
+
+my $prompt_test = IO::Prompt::Testable.new();
+$a = $prompt_test.ask_yn( "Testable, defaults to false?", Bool::False );
 say $a.perl;
