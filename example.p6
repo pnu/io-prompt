@@ -2,34 +2,40 @@
 use v6;
 use IO::Prompt;
 
+## Functional style, exported method is "ask" ##
 my $a;
 
-#### Numericals ####
-
-## Procedural style
-$a = IO::Prompt.ask_num( "Defaults to 42?", 42 );
+$a = ask( 'No options?' );
 say $a.perl;
+say '------------------------------';
 
-$a = IO::Prompt.ask_int( "No default?" );
+$a = ask( "Defaults to 42?", 42 );
 say $a.perl;
+say '------------------------------';
 
-
-#### Yes/No ####
-
-## Procedural style
-$a = IO::Prompt.ask_yn( "Defaults to false?", Bool::False );
+$a = ask( "Defaults to 42, type Num?", 42, :type(Num) );
 say $a.perl;
+say '------------------------------';
 
-$a = IO::Prompt.ask_yn( "Defaults to true?", Bool::True );
+$a = ask( "Defaults to false?", Bool::False );
 say $a.perl;
+say '------------------------------';
 
-$a = IO::Prompt.ask_yn( "No default?" );
+$a = ask( "No default but type Bool?", :type(Bool) );
 say $a.perl;
+say '------------------------------';
 
-## OO style
+
+## OO style ##
 my $prompt = IO::Prompt.new();
-$a = $prompt.ask_yn( "OO style, defaults to false?", Bool::False );
+
+$a = $prompt.do( "Dot notation?", Bool::False );
 say $a.perl;
+say '------------------------------';
+
+# $a = do $prompt: "Indirect object notation?";
+# say $a.perl;
+# say '------------------------------';
 
 ## You can override the IO methods for testing purposes
 class IO::Prompt::Testable is IO::Prompt {
@@ -48,3 +54,4 @@ class IO::Prompt::Testable is IO::Prompt {
 my $prompt_test = IO::Prompt::Testable.new();
 $a = $prompt_test.ask_yn( "Testable, defaults to false?", Bool::False );
 say $a.perl;
+say '------------------------------';

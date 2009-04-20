@@ -25,12 +25,12 @@ my @tests = (
 [ q{ask_yn( 'da9?', Bool::True  )}, 'da9? [Y/n] ', '',    Bool::True  ],
 [ q{ask_yn( 'd10?', Bool::False )}, 'd10? [y/N] ', '',    Bool::False ],
 
-[ q{ask_yn( 'qa9?', undef       )}, 'Please enter yes or no', '',    undef ],
-[ q{ask_yn( 'q10?'              )}, 'Please enter yes or no', '',    undef ],
-[ q{ask_yn( 'wa9?', Bool::True  )}, 'Please enter yes or no', 'Daa', undef ],
-[ q{ask_yn( 'w10?', Bool::False )}, 'Please enter yes or no', 'Daa', undef ],
-[ q{ask_yn( 'wa9?', undef       )}, 'Please enter yes or no', 'Daa', undef ],
-[ q{ask_yn( 'w10?'              )}, 'Please enter yes or no', 'Daa', undef ],
+[ q{ask_yn( 'qa9?', undef       )}, 'Please enter yes or no', '',    Bool ],
+[ q{ask_yn( 'q10?'              )}, 'Please enter yes or no', '',    Bool ],
+[ q{ask_yn( 'wa9?', Bool::True  )}, 'Please enter yes or no', 'Daa', Bool ],
+[ q{ask_yn( 'w10?', Bool::False )}, 'Please enter yes or no', 'Daa', Bool ],
+[ q{ask_yn( 'wa9?', undef       )}, 'Please enter yes or no', 'Daa', Bool ],
+[ q{ask_yn( 'w10?'              )}, 'Please enter yes or no', 'Daa', Bool ],
 
 ##  Num tests
 ##  method   quest  default   output          answer   expected
@@ -42,10 +42,10 @@ my @tests = (
 [ q{ask_int( 'i2?', 20 )},    'i2? [20] ',    '24',    24 ],
 [ q{ask_int( 'i3?'     )},    'i3? [Int] ',   '11',    11 ],
 
-[ q{ask_num( 'nA?', 10.01 )}, 'Please enter a valid number',  'aaa', undef ],
-[ q{ask_num( 'nB?         )}, 'Please enter a valid number',  '',    undef ],
-[ q{ask_int( 'iA?', 10    )}, 'Please enter a valid integer', 'aaa', undef ],
-[ q{ask_int( 'iB?         )}, 'Please enter a valid integer', '',    undef ],
+[ q{ask_num( 'nA?', 10.01 )}, 'Please enter a valid number',  'aaa', Num ],
+[ q{ask_num( 'nB?'        )}, 'Please enter a valid number',  '',    Num ],
+[ q{ask_int( 'iA?', 10    )}, 'Please enter a valid integer', 'aaa', Int ],
+[ q{ask_int( 'iB?'        )}, 'Please enter a valid integer', '',    Int ],
 
 );
 
