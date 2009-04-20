@@ -39,12 +39,12 @@ say '------------------------------';
 
 ## You can override the IO methods for testing purposes
 class IO::Prompt::Testable is IO::Prompt {
-    our Bool method do_say( Str $question ) {
+    method do_say( Str $question ) returns Bool {
         say "Testable saying    '$question'";
         say 'Please do not continue questioning';
         return Bool::False; # do not continue
     }
-    our Str method do_prompt( Str $question ) {
+    method do_prompt( Str $question ) returns Str {
         say "Testable saying    '$question'";
         say "Testable answering 'daa'";
         return 'daa';

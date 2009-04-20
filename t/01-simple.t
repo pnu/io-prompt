@@ -57,11 +57,11 @@ plan 1 + @tests * 2;
 class IO::Prompt::Testable is IO::Prompt {
     has $.do_input_buffer  is rw = '';
     has $.do_prompt_answer is rw = '';
-    our Bool method do_say( Str $question ) {
+    method do_say( Str $question ) returns Bool {
         $.do_input_buffer = $question;
         return Bool::False; # do not continue
     }
-    our Str method do_prompt( Str $question ) {
+    method do_prompt( Str $question ) returns Str {
         $.do_input_buffer = $question;
         return $.do_prompt_answer;
     }
