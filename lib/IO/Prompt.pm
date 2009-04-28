@@ -7,15 +7,18 @@ class IO::Prompt {
 sub ask ( Str $message, $default?, :$type ) is export {
     return IO::Prompt.ask($message,$default,:$type);
 }
+
 sub asker ( Str $message, $default?, :$type ) is export {
     return IO::Prompt.new( :$message, :$default, :$type );
 }
+
 
 ## Private state for object calls. Populated by constructor.
 ##
 has $!default;
 has $!message;
 has $!type;
+
 
 ## Method frontend to lowlevel type-specific methods
 ##
@@ -50,49 +53,58 @@ method !do_prompt ( Str $question? ) returns Str {
     return defined $question ?? prompt($question)
                              !! prompt('');
 }
-## Return False, if there is no point to continue
-##
+
 method !do_say ( Str $output ) returns Bool {
     say $output;
     return Bool::True;
+    ## Return False, if there is no point to continue
 }
+
+## The strings and rules used in the low-level
+## query methods. Override these class attributes
+## for localization etc.
+##
+our Str $.lang_prompt_Yn        = 'Y/n';
+our Str $.lang_prompt_yN        = 'y/N';
+our Str $.lang_prompt_yn        = 'y/n';
+our Str $.lang_prompt_yn_retry  = 'Please enter yes or no';
+our     $.lang_prompt_match_y   = m/ ^^ <[yY]> /;
+our     $.lang_prompt_match_n   = m/ ^^ <[nN]> /;
+our Str $.lang_prompt_int       = 'Int';
+our Str $.lang_prompt_int_retry = 'Please enter a valid integer';
+our Str $.lang_prompt_num       = 'Num';
+our Str $.lang_prompt_num_retry = 'Please enter a valid number';
+our Str $.lang_prompt_str       = 'Str';
+our Str $.lang_prompt_str_retry = 'Please enter a valid string';
 
 ## Object evaluation in various contexts (type coersion)
 ##
 method true {
     return self.ask( $!message, $!default, :type($!type // Bool) );
 }
+
 method Int {
     return self.ask( $!message, $!default, :type($!type // Int) );
 }
+
 method Num {
     return self.ask( $!message, $!default, :type($!type // Num) );
 }
+
 method Str {
     return self.ask( $!message, $!default, :type($!type // Str) );
 }
 
+
 ## Boolean Yes/No 
 ##
-my Str $.lang_prompt_Yn = 'Y/n';
-my Str $.lang_prompt_yN = 'y/N';
-my Str $.lang_prompt_yn = 'y/n';
-my Str $.lang_prompt_yn_retry = 'Please enter yes or no';
-my $.lang_prompt_match_y = m/ ^^ <[yY]> /;
-my $.lang_prompt_match_n = m/ ^^ <[nN]> /;
-
 method ask_yn (  Str $message=$!message,
                 Bool $default=$!default ) returns Bool {
 
     my Bool $result;
-    my  Str $prompt = ( $message ?? "$message " !! '' )
-                    ~ '['
-                    ~ ( defined $default ?? $default
-                        ?? $.lang_prompt_Yn
-                        !! $.lang_prompt_yN
-                        !! $.lang_prompt_yn )
-                    ~ ']'
-                    ~ ' ';
+    my  Str $prompt = "{$message ?? "$message " !! ''}[{
+            defined $default ?? $default ?? $.lang_prompt_Yn
+            !! $.lang_prompt_yN !! $.lang_prompt_yn}] ";
 
     loop {
         my Str $response = self!do_prompt( $prompt );
@@ -112,18 +124,12 @@ method ask_yn (  Str $message=$!message,
 
 ## Only Integers
 ##
-my Str $.lang_prompt_int       = 'Int';
-my Str $.lang_prompt_int_retry = 'Please enter a valid integer';
-
 method ask_int ( Str $message=$!message,
                  Int $default=$!default ) returns Int {
 
     my Int $result;
-    my Str $prompt = ( $message ?? "$message " !! '' )
-                   ~ '['
-                   ~ ( $default // $.lang_prompt_int )
-                   ~ ']'
-                   ~ ' ';
+    my Str $prompt = "{$message ?? "$message " !! ''}[{
+                       $default // $.lang_prompt_int}] ";
 
     loop {
         my Str $response = self!do_prompt( $prompt );
@@ -145,18 +151,12 @@ method ask_int ( Str $message=$!message,
 
 ## Numeric type, can hold integers, numbers and eventually rationals
 ##
-my Str $.lang_prompt_num       = 'Num';
-my Str $.lang_prompt_num_retry = 'Please enter a valid number';
-
 method ask_num ( Str $message=$!message,
                  Num $default=$!default ) returns Num {
 
     my Num $result;
-    my Str $prompt = ( $message ?? "$message " !! '' )
-                   ~ '['
-                   ~ ( $default // $.lang_prompt_num )
-                   ~ ']'
-                   ~ ' ';
+    my Str $prompt = "{$message ?? "$message " !! ''}[{
+                       $default // $.lang_prompt_num}] ";
 
     loop {
         my Str $response = self!do_prompt( $prompt );
@@ -180,18 +180,12 @@ method ask_num ( Str $message=$!message,
 ## Str type, can hold anything that can be read from IO
 ## (not sure if this is true...?) This is the default.
 ##
-my Str $.lang_prompt_str       = 'Str';
-my Str $.lang_prompt_str_retry = 'Please enter a valid string';
-
 method ask_str ( Str $message=$!message,
                  Str $default=$!default ) returns Str {
 
     my Str $result;
-    my Str $prompt = ( $message ?? "$message " !! '' )
-                   ~ '['
-                   ~ ( $default // $.lang_prompt_str )
-                   ~ ']'
-                   ~ ' ';
+    my Str $prompt = "{$message ?? "$message " !! ''}[{
+                       $default // $.lang_prompt_str}] ";
 
     loop {
         my Str $response = self!do_prompt( $prompt );
