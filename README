@@ -16,10 +16,6 @@ $ PERL6LIB=../proto/lib perl6 Configure.p6
 $ make test
 $ PERL6LIB=lib perl6 example.p6
 
-Have fun.
-Proper documentation not done yet.
-See example.p6 and lib/IO/Prompt.pm
+$ perldoc lib/IO/Prompt
 
-
-(C) Copyright 2009 by Panu Ervamaa.
-The license is Artistic 2.0.
+See also example.p6 and lib/IO/Prompt.pm

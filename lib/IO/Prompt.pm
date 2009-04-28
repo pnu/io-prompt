@@ -1,6 +1,6 @@
 use v6;
-
 class IO::Prompt {
+
 
 ## Exported functional frontend
 ##
@@ -47,6 +47,7 @@ method ask ( Str $message=$!message,
     return $r;
 }
 
+
 ## The low-level IO methods. Override for testing etc.
 ##
 method !do_prompt ( Str $question? ) returns Str {
@@ -59,6 +60,7 @@ method !do_say ( Str $output ) returns Bool {
     return Bool::True;
     ## Return False, if there is no point to continue
 }
+
 
 ## The strings and rules used in the low-level
 ## query methods. Override these class attributes
@@ -76,6 +78,7 @@ our Str $.lang_prompt_num       = 'Num';
 our Str $.lang_prompt_num_retry = 'Please enter a valid number';
 our Str $.lang_prompt_str       = 'Str';
 our Str $.lang_prompt_str_retry = 'Please enter a valid string';
+
 
 ## Object evaluation in various contexts (type coersion)
 ##
@@ -122,6 +125,7 @@ method ask_yn (  Str $message=$!message,
     return $result // Bool;
 }
 
+
 ## Only Integers
 ##
 method ask_int ( Str $message=$!message,
@@ -148,6 +152,7 @@ method ask_int ( Str $message=$!message,
  
    return $result // Int;
 }
+
 
 ## Numeric type, can hold integers, numbers and eventually rationals
 ##
@@ -176,6 +181,7 @@ method ask_num ( Str $message=$!message,
  
    return $result // Num;
 }
+
 
 ## Str type, can hold anything that can be read from IO
 ## (not sure if this is true...?) This is the default.
