@@ -26,23 +26,25 @@ method ask ( Str $message=$!message,
                  $default=$!default,
                    :$type=$!type ) {
 
-    my $r;
+    my $args = \($message,$default);
 
-    given $type        {
-      when .^isa('Bool') { $r = self.ask_yn(  $message, $default ); }
-      when .^isa('Int')  { $r = self.ask_int( $message, $default ); }
-      when .^isa('Num')  { $r = self.ask_num( $message, $default ); }
-      when .^isa('Str')  { $r = self.ask_str( $message, $default ); }
-      default            {
-        given $default     {
-          when .^isa('Bool') { $r = self.ask_yn(  $message, $default ); }
-          when .^isa('Int')  { $r = self.ask_int( $message, $default ); }
-          when .^isa('Num')  { $r = self.ask_num( $message, $default ); }
-          when .^isa('Str')  { $r = self.ask_str( $message, $default ); }
-          default            { $r = self.ask_str( $message, $default ); }
-        } # given $default
-      } # given $type default
-    } # given $type
+    my $r = do {
+      given $type        {
+        when .^isa('Bool') { self.ask_yn(  |$args ); }
+        when .^isa('Int')  { self.ask_int( |$args ); }
+        when .^isa('Num')  { self.ask_num( |$args ); }
+        when .^isa('Str')  { self.ask_str( |$args ); }
+        default            {
+          given $default     {
+            when .^isa('Bool') { self.ask_yn(  |$args ); }
+            when .^isa('Int')  { self.ask_int( |$args ); }
+            when .^isa('Num')  { self.ask_num( |$args ); }
+            when .^isa('Str')  { self.ask_str( |$args ); }
+            default            { self.ask_str( |$args ); }
+          } # given $default
+        } # given $type default
+      } # given $type
+    };
 
     return $r;
 }
