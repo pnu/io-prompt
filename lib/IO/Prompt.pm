@@ -7,6 +7,10 @@ class IO::Prompt {
 sub ask ( Str $message, $default?, :$type ) is export {
     return IO::Prompt.ask($message,$default,:$type);
 }
+## Argument list binding (S06) Not Implemented Yet:
+#sub ask ( |$args ) is export {
+#    return IO::Prompt.ask( |$args );
+#}
 
 sub asker ( Str $message, $default?, :$type ) is export {
     return IO::Prompt.new( :$message, :$default, :$type );

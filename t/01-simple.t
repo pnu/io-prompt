@@ -69,7 +69,7 @@ class IO::Prompt::Testable is IO::Prompt {
 
 my $prompt = IO::Prompt::Testable.new();
 
-isa_ok( $prompt, 'IO::Prompt', 'create object' );
+isa_ok( $prompt, IO::Prompt, 'create object' );
 
 for @tests -> @row {
     my ($call, $output, $answer, $expected) = @row;
@@ -99,3 +99,4 @@ for @tests -> @row {
         " expected {$output.perl}"
     );
 }
+# vim: ft=perl6
