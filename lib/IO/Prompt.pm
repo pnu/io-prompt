@@ -34,16 +34,16 @@ method ask ( Str $message=$!message,
 
     my $r = do {
       given $type        {
-        when .^isa('Bool') { self.ask_yn(  |$args ); }
-        when .^isa('Int')  { self.ask_int( |$args ); }
-        when .^isa('Num')  { self.ask_num( |$args ); }
-        when .^isa('Str')  { self.ask_str( |$args ); }
+        when .^isa(Bool) { self.ask_yn(  |$args ); }
+        when .^isa(Int)  { self.ask_int( |$args ); }
+        when .^isa(Num)  { self.ask_num( |$args ); }
+        when .^isa(Str)  { self.ask_str( |$args ); }
         default            {
           given $default     {
-            when .^isa('Bool') { self.ask_yn(  |$args ); }
-            when .^isa('Int')  { self.ask_int( |$args ); }
-            when .^isa('Num')  { self.ask_num( |$args ); }
-            when .^isa('Str')  { self.ask_str( |$args ); }
+            when .^isa(Bool) { self.ask_yn(  |$args ); }
+            when .^isa(Int)  { self.ask_int( |$args ); }
+            when .^isa(Num)  { self.ask_num( |$args ); }
+            when .^isa(Str)  { self.ask_str( |$args ); }
             default            { self.ask_str( |$args ); }
           } # given $default
         } # given $type default
