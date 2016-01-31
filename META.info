@@ -1,0 +1,13 @@
+{
+    "perl" : "6.*",
+    "name" : "IO::Prompt",
+    "version" : "0.0.1",
+    "description" : "This is a generic module for interactive prompting from the console.",
+    "authors" : [ "pnu" ],
+    "provides" : {
+    	"IO::Prompt" : "lib/IO/Prompt.pm"
+    },
+    "depends" : [ ],
+    "resources" : [ ],
+	"source-url" : "git://github.com/pnu/io-prompt.git"
+}

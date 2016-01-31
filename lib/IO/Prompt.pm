@@ -1,7 +1,6 @@
 use v6;
 class IO::Prompt {
 
-
 ## Exported functional frontend
 ##
 sub ask ( Str $message, $default?, :$type ) is export {
@@ -72,18 +71,18 @@ method !do_say ( Str $output ) returns Bool {
 ## query methods. Override these class attributes
 ## for localization etc.
 ##
-our Str $.lang_prompt_Yn        = 'Y/n';
-our Str $.lang_prompt_yN        = 'y/N';
-our Str $.lang_prompt_yn        = 'y/n';
-our Str $.lang_prompt_yn_retry  = 'Please enter yes or no';
+our $.lang_prompt_Yn        = 'Y/n';
+our $.lang_prompt_yN        = 'y/N';
+our $.lang_prompt_yn        = 'y/n';
+our $.lang_prompt_yn_retry  = 'Please enter yes or no';
 our     $.lang_prompt_match_y   = m/ ^^ <[yY]> /;
 our     $.lang_prompt_match_n   = m/ ^^ <[nN]> /;
-our Str $.lang_prompt_int       = 'Int';
-our Str $.lang_prompt_int_retry = 'Please enter a valid integer';
-our Str $.lang_prompt_num       = 'Num';
-our Str $.lang_prompt_num_retry = 'Please enter a valid number';
-our Str $.lang_prompt_str       = 'Str';
-our Str $.lang_prompt_str_retry = 'Please enter a valid string';
+our $.lang_prompt_int       = 'Int';
+our $.lang_prompt_int_retry = 'Please enter a valid integer';
+our $.lang_prompt_num       = 'Num';
+our $.lang_prompt_num_retry = 'Please enter a valid number';
+our $.lang_prompt_str       = 'Str';
+our $.lang_prompt_str_retry = 'Please enter a valid string';
 
 
 ## Object evaluation in various contexts (type coersion)
@@ -122,7 +121,7 @@ method ask_yn (  Str $message=$!message,
             when $.lang_prompt_match_y { $result = Bool::True }
             when $.lang_prompt_match_n { $result = Bool::False }
             when ''                    { $result = $default }
-            default                    { $result = undef }
+            default                    { $result = Nil }
         }
         last if defined $result;
         last if not self!do_say( $.lang_prompt_yn_retry );
@@ -145,12 +144,12 @@ method ask_int ( Str $message=$!message,
         my Str $response = self!do_prompt( $prompt );
 
         given $response {
-            when /^^ <Perl6::Grammar::integer> $$/
-                { $result = int $response }
+            when /^^ \d+ $$/
+                { $result = +$response }
             when ''
                 { $result = $default }
             default
-                { $result = undef }
+                { $result = Nil }
         }
         last if defined $result;
         last if not self!do_say( $.lang_prompt_int_retry );
@@ -173,12 +172,12 @@ method ask_num ( Str $message=$!message,
         my Str $response = self!do_prompt( $prompt );
 
         given $response {
-            when /^^ <Perl6::Grammar::number> $$/
+            when /^^ \d+ $$/
                 { $result = +$response }
             when ''
                 { $result = $default }
             default
-                { $result = undef }
+                { $result = Nil }
         }
 
         last if defined $result;
@@ -216,6 +215,6 @@ method ask_str ( Str $message=$!message,
    return $result // Str;
 }
 
-}
+} # class IO::Prompt;
 
 # vim: ft=perl6
