@@ -79,8 +79,8 @@ our     $.lang_prompt_match_y   = / ^^ <[yY]> /;
 our     $.lang_prompt_match_n   = / ^^ <[nN]> /;
 our $.lang_prompt_int       = 'Int';
 our $.lang_prompt_int_retry = 'Please enter a valid integer';
-our $.lang_prompt_num       = 'Num';
-our $.lang_prompt_num_retry = 'Please enter a valid number';
+our $.lang_prompt_rat       = 'Rat';
+our $.lang_prompt_rat_retry = 'Please enter a valid rational number';
 our $.lang_prompt_str       = 'Str';
 our $.lang_prompt_str_retry = 'Please enter a valid string';
 
@@ -169,30 +169,30 @@ method ask_int ( Str $message=$!message,
 
 ## Numeric type, can hold integers, numbers and eventually rationals
 ##
-method ask_num ( Str $message=$!message,
-                 $default=$!default ) returns Num {
+method ask_rat ( Str $message=$!message,
+                 $default=$!default ) returns Rat {
 
-    my Num $result;
+    my Rat $result;
     my Str $prompt = "{$message ?? "$message " !! ''}[{
-                       $default // $.lang_prompt_num}] ";
+                       $default // $.lang_prompt_rat}] ";
 
     loop {
         my Str $response = self._do_prompt( $prompt );
 
         given $response {
-            when /^^ \d ** 1..* e \d ** 1..* $$/
+            when /^^ \d ** 1..* <[\.\,]> \d ** 1..* $$/
                 { $result = +$response }
             when ''
-                { $result = $default // Num }
+                { $result = $default // Rat }
             default
                 { $result = Nil }
         }
 
         last if defined $result;
-        last if not self._do_say( $.lang_prompt_num_retry );
+        last if not self._do_say( $.lang_prompt_rat_retry );
     }
  
-   return $result // Num;
+   return $result // Rat;
 }
 
 

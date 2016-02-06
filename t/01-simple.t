@@ -32,19 +32,18 @@ my @tests = (
 [ q{ask_yn( 'wa9?', Nil         )}, 'Please enter yes or no', 'Daa', Bool ],
 [ q{ask_yn( 'w10?'              )}, 'Please enter yes or no', 'Daa', Bool ],
 
-##  Num tests
-# at the moment nums does not accept integer or rational numbers
+##  rational number tests
 ##  method   quest  default   output          answer   expected
-#[ q{ask_num( 'n1?', 10.01 )}, 'n1? [10.01] ', '42.42', 42.42  ],
-#[ q{ask_num( 'n2?', 20.02 )}, 'n2? [20.02] ', '24.24', 24.24  ],
-#[ q{ask_num( 'n3?'        )}, 'n3? [Num] ',   '11.11', 11.11  ],
+[ q{ask_rat( 'r1?', 10.01 )}, 'r1? [10.01] ', '10.01', 10.01  ],
+[ q{ask_rat( 'r2?', 20.02 )}, 'r2? [20.02] ', '24.24', 24.24  ],
+[ q{ask_rat( 'r3?'        )}, 'r3? [Rat] ',   '11.11', 11.11  ],
 
 [ q{ask_int( 'i1?', 10 )},    'i1? [10] ',    '42',    42 ],
 [ q{ask_int( 'i2?', 20 )},    'i2? [20] ',    '24',    24 ],
 [ q{ask_int( 'i3?'     )},    'i3? [Int] ',   '11',    11 ],
 
-[ q{ask_num( 'nA?', 10.01 )}, 'Please enter a valid number',  'aaa', Num ],
-[ q{ask_num( 'nB?'        )}, 'Please enter a valid number',  '',    Num ],
+[ q{ask_rat( 'rA?', 10.01 )}, 'Please enter a valid rational number',  'aaa', Rat ],
+[ q{ask_rat( 'rB?'        )}, 'Please enter a valid rational number',  '',    Rat ],
 [ q{ask_int( 'iA?', 10    )}, 'Please enter a valid integer', 'aaa', Int ],
 [ q{ask_int( 'iB?'        )}, 'Please enter a valid integer', '',    Int ],
 
