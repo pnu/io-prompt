@@ -4,7 +4,7 @@ IO::Prompt -- Interactive validating terminal prompt
 
 =for HTML <a href="https://travis-ci.org/wbiker/io-prompt"><img src="https://travis-ci.org/wbiker/io-prompt.svg?branch=master"></a>
 
-=head1 SSYNOPSIS
+=head1 SYNOPSIS
 
     use v6;
     use IO::Prompt;
@@ -95,6 +95,7 @@ IO::Prompt provides method ask to set the question string, a default answer and/
 a return type.
 
 Examples:
+
     use IO::Prompt;
 
     my $answer = ask("What do you want for Christmas?", "Perl6");
@@ -105,6 +106,7 @@ Examples:
 IO::Prompt provides also a OO interface.
 
 Example:
+
     use IO::Prompt;
 
     my $asker = IO::Prompt.new;
