@@ -55,7 +55,7 @@ method ask ( Str $message=$!message,
 
 ## The low-level IO methods. Override for testing etc.
 ##
-method _do_prompt ( Str $question? ) returns Str {
+method _do_prompt ( Str $question? ) {
     return (defined $question) ?? prompt($question)
                              !! prompt('');
 }
@@ -79,8 +79,8 @@ our     $.lang_prompt_match_y   = / ^^ <[yY]> /;
 our     $.lang_prompt_match_n   = / ^^ <[nN]> /;
 our $.lang_prompt_int       = 'Int';
 our $.lang_prompt_int_retry = 'Please enter a valid integer';
-our $.lang_prompt_rat       = 'Rat';
-our $.lang_prompt_rat_retry = 'Please enter a valid rational number';
+our $.lang_prompt_rat       = 'Num';
+our $.lang_prompt_rat_retry = 'Please enter a valid number';
 our $.lang_prompt_str       = 'Str';
 our $.lang_prompt_str_retry = 'Please enter a valid string';
 
@@ -88,18 +88,22 @@ our $.lang_prompt_str_retry = 'Please enter a valid string';
 ## Object evaluation in various contexts (type coersion)
 ##
 method true {
+    say "true";
     return self.ask( $!message, $!default, :type($!type // Bool) );
 }
 
 method Int {
+    say "Int";
     return self.ask( $!message, $!default, :type($!type // Int) );
 }
 
-method Num {
+method Numeric {
+    say "Numeric";
     return self.ask( $!message, $!default, :type($!type // Num) );
 }
 
 method Str {
+    say "Str";
     return self.ask( $!message, $!default, :type($!type // Str) );
 }
 
@@ -128,14 +132,14 @@ method ask_yn (  Str $message=$!message,
         given $response {
             when $.lang_prompt_match_y { $result = Bool::True }
             when $.lang_prompt_match_n { $result = Bool::False }
-            when ''                    { $result = $default // Bool }
+            when ''                    { $result = $default // Nil }
             default                    { $result = Nil }
         }
         last if defined $result;
         last if not self._do_say( $.lang_prompt_yn_retry );
     }
 
-    return $result // Bool;
+    return $result;
 }
 
 
@@ -155,7 +159,7 @@ method ask_int ( Str $message=$!message,
             when /^^ \d+ $$/
                 { $result = +$response }
             when ''
-                { $result = $default // int }
+                { $result = $default // Nil }
             default
                 { $result = Nil }
         }
@@ -163,27 +167,33 @@ method ask_int ( Str $message=$!message,
         last if not self._do_say( $.lang_prompt_int_retry );
     }
  
-   return $result // Int;
+   return $result;
 }
 
 
 ## Numeric type, can hold integers, numbers and eventually rationals
 ##
-method ask_rat ( Str $message=$!message,
-                 $default=$!default ) returns Rat {
+method ask_num ( Str $message=$!message,
+                 $default=$!default ) returns Numeric {
 
-    my Rat $result;
+    my Numeric $result;
     my Str $prompt = "{$message ?? "$message " !! ''}[{
                        $default // $.lang_prompt_rat}] ";
 
     loop {
-        my Str $response = self._do_prompt( $prompt );
+        my $response = self._do_prompt( $prompt );
 
-        given $response {
-            when /^^ \d ** 1..* <[\.\,]> \d ** 1..* $$/
-                { $result = +$response }
+        my $possible_num = $response;
+        # if the response is a Numeric, all's fine. But if not
+        # I will get an exception that is catched in the 
+        # try block. If the response is a '' the coerce into Numeric
+        # would create a 0. So I have to skip then.
+        try { $possible_num = $response.Numeric } unless '' eq $response;
+        given $possible_num {
+            when $_ ~~ Numeric
+                { $result = $possible_num }
             when ''
-                { $result = $default // Rat }
+                { $result = $default // Nil }
             default
                 { $result = Nil }
         }
@@ -192,7 +202,7 @@ method ask_rat ( Str $message=$!message,
         last if not self._do_say( $.lang_prompt_rat_retry );
     }
  
-   return $result // Rat;
+   return $result;
 }
 
 

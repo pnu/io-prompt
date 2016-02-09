@@ -34,16 +34,17 @@ my @tests = (
 
 ##  rational number tests
 ##  method   quest  default   output          answer   expected
-[ q{ask_rat( 'r1?', 10.01 )}, 'r1? [10.01] ', '10.01', 10.01  ],
-[ q{ask_rat( 'r2?', 20.02 )}, 'r2? [20.02] ', '24.24', 24.24  ],
-[ q{ask_rat( 'r3?'        )}, 'r3? [Rat] ',   '11.11', 11.11  ],
+[ q{ask_num( 'r1?', 10.01 )}, 'r1? [10.01] ', '10.01', 10.01  ],
+[ q{ask_num( 'r2?', 20.02 )}, 'r2? [20.02] ', '24.24', 24.24  ],
+[ q{ask_num( 'r3?'        )}, 'r3? [Num] ',   '11.11', 11.11  ],
+[ q{ask_num( 'r4?',  3e2   )}, 'r4? [300] ',   '3e2'  , 300    ],
 
 [ q{ask_int( 'i1?', 10 )},    'i1? [10] ',    '42',    42 ],
 [ q{ask_int( 'i2?', 20 )},    'i2? [20] ',    '24',    24 ],
 [ q{ask_int( 'i3?'     )},    'i3? [Int] ',   '11',    11 ],
 
-[ q{ask_rat( 'rA?', 10.01 )}, 'Please enter a valid rational number',  'aaa', Rat ],
-[ q{ask_rat( 'rB?'        )}, 'Please enter a valid rational number',  '',    Rat ],
+[ q{ask_num( 'rA?', 10.01 )}, 'Please enter a valid number',  'aaa', Numeric ],
+[ q{ask_num( 'rB?'        )}, 'Please enter a valid number',  '',    Numeric ],
 [ q{ask_int( 'iA?', 10    )}, 'Please enter a valid integer', 'aaa', Int ],
 [ q{ask_int( 'iB?'        )}, 'Please enter a valid integer', '',    Int ],
 
