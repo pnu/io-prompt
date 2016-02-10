@@ -10,5 +10,5 @@
     "depends" : [ ],
     "test-depends" : [ "Test" ],
     "resources" : [ ],
-	"source" : "git://github.com/wbiker/io-prompt.git"
+    "source-url" : "git://github.com/wbiker/io-prompt.git"
 }
