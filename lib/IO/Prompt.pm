@@ -1,6 +1,5 @@
 use v6;
-class IO::Prompt {
-
+unit class IO::Prompt;
 
 ## Exported functional frontend
 ##
@@ -33,17 +32,17 @@ method ask ( Str $message=$!message,
     my $args = \($message,$default);
 
     my $r = do {
-      given $type        {
-        when .^isa(Bool) { self.ask_yn(  |$args ); }
-        when .^isa(Int)  { self.ask_int( |$args ); }
-        when .^isa(Num)  { self.ask_num( |$args ); }
-        when .^isa(Str)  { self.ask_str( |$args ); }
+      given $type {
+        when .isa(Bool) { self.ask_yn(  |$args ); }
+        when .isa(Int)  { self.ask_int( |$args ); }
+        when .isa(Num)  { self.ask_num( |$args ); }
+        when .isa(Str)  { self.ask_str( |$args ); }
         default            {
           given $default     {
-            when .^isa(Bool) { self.ask_yn(  |$args ); }
-            when .^isa(Int)  { self.ask_int( |$args ); }
-            when .^isa(Num)  { self.ask_num( |$args ); }
-            when .^isa(Str)  { self.ask_str( |$args ); }
+            when .isa(Bool) { self.ask_yn(  |$args ); }
+            when .isa(Int)  { self.ask_int( |$args ); }
+            when .isa(Num)  { self.ask_num( |$args ); }
+            when .isa(Str)  { self.ask_str( |$args ); }
             default            { self.ask_str( |$args ); }
           } # given $default
         } # given $type default
@@ -56,12 +55,12 @@ method ask ( Str $message=$!message,
 
 ## The low-level IO methods. Override for testing etc.
 ##
-method !do_prompt ( Str $question? ) returns Str {
-    return defined $question ?? prompt($question)
+method _do_prompt ( Str $question? ) {
+    return (defined $question) ?? prompt($question)
                              !! prompt('');
 }
 
-method !do_say ( Str $output ) returns Bool {
+method _do_say ( Str $output ) returns Bool {
     say $output;
     return Bool::True;
     ## Return False, if there is no point to continue
@@ -72,35 +71,39 @@ method !do_say ( Str $output ) returns Bool {
 ## query methods. Override these class attributes
 ## for localization etc.
 ##
-our Str $.lang_prompt_Yn        = 'Y/n';
-our Str $.lang_prompt_yN        = 'y/N';
-our Str $.lang_prompt_yn        = 'y/n';
-our Str $.lang_prompt_yn_retry  = 'Please enter yes or no';
-our     $.lang_prompt_match_y   = m/ ^^ <[yY]> /;
-our     $.lang_prompt_match_n   = m/ ^^ <[nN]> /;
-our Str $.lang_prompt_int       = 'Int';
-our Str $.lang_prompt_int_retry = 'Please enter a valid integer';
-our Str $.lang_prompt_num       = 'Num';
-our Str $.lang_prompt_num_retry = 'Please enter a valid number';
-our Str $.lang_prompt_str       = 'Str';
-our Str $.lang_prompt_str_retry = 'Please enter a valid string';
+our $.lang_prompt_Yn        = 'Y/n';
+our $.lang_prompt_yN        = 'y/N';
+our $.lang_prompt_yn        = 'y/n';
+our $.lang_prompt_yn_retry  = 'Please enter yes or no';
+our     $.lang_prompt_match_y   = / ^^ <[yY]> /;
+our     $.lang_prompt_match_n   = / ^^ <[nN]> /;
+our $.lang_prompt_int       = 'Int';
+our $.lang_prompt_int_retry = 'Please enter a valid integer';
+our $.lang_prompt_rat       = 'Num';
+our $.lang_prompt_rat_retry = 'Please enter a valid number';
+our $.lang_prompt_str       = 'Str';
+our $.lang_prompt_str_retry = 'Please enter a valid string';
 
 
 ## Object evaluation in various contexts (type coersion)
 ##
 method true {
+    say "true";
     return self.ask( $!message, $!default, :type($!type // Bool) );
 }
 
 method Int {
+    say "Int";
     return self.ask( $!message, $!default, :type($!type // Int) );
 }
 
-method Num {
+method Numeric {
+    say "Numeric";
     return self.ask( $!message, $!default, :type($!type // Num) );
 }
 
 method Str {
+    say "Str";
     return self.ask( $!message, $!default, :type($!type // Str) );
 }
 
@@ -108,84 +111,98 @@ method Str {
 ## Boolean Yes/No 
 ##
 method ask_yn (  Str $message=$!message,
-                Bool $default=$!default ) returns Bool {
+                $default=$!default ) returns Bool {
 
     my Bool $result;
-    my  Str $prompt = "{$message ?? "$message " !! ''}[{
-            defined $default ?? $default ?? $.lang_prompt_Yn
-            !! $.lang_prompt_yN !! $.lang_prompt_yn}] ";
+    my $prompt-type = "[$.lang_prompt_yn] ";
+    if defined $default and $default {
+        $prompt-type = "[$.lang_prompt_Yn] ";
+    }
+    elsif $default.isa(Bool::False) {
+        $prompt-type = "[$.lang_prompt_yN] ";
+    }
+
+    my Str $prompt = "";
+    $prompt = "$message " if $message;
+    $prompt ~= $prompt-type;
 
     loop {
-        my Str $response = self!do_prompt( $prompt );
+        my Str $response = self._do_prompt( $prompt );
 
         given $response {
             when $.lang_prompt_match_y { $result = Bool::True }
             when $.lang_prompt_match_n { $result = Bool::False }
-            when ''                    { $result = $default }
-            default                    { $result = undef }
+            when ''                    { $result = $default // Nil }
+            default                    { $result = Nil }
         }
         last if defined $result;
-        last if not self!do_say( $.lang_prompt_yn_retry );
+        last if not self._do_say( $.lang_prompt_yn_retry );
     }
 
-    return $result // Bool;
+    return $result;
 }
 
 
 ## Only Integers
 ##
 method ask_int ( Str $message=$!message,
-                 Int $default=$!default ) returns Int {
+                    $default=$!default ) returns Int {
 
     my Int $result;
     my Str $prompt = "{$message ?? "$message " !! ''}[{
                        $default // $.lang_prompt_int}] ";
 
     loop {
-        my Str $response = self!do_prompt( $prompt );
+        my Str $response = self._do_prompt( $prompt );
 
         given $response {
-            when /^^ <Perl6::Grammar::integer> $$/
-                { $result = int $response }
+            when /^^ \d+ $$/
+                { $result = +$response }
             when ''
-                { $result = $default }
+                { $result = $default // Nil }
             default
-                { $result = undef }
+                { $result = Nil }
         }
         last if defined $result;
-        last if not self!do_say( $.lang_prompt_int_retry );
+        last if not self._do_say( $.lang_prompt_int_retry );
     }
  
-   return $result // Int;
+   return $result;
 }
 
 
 ## Numeric type, can hold integers, numbers and eventually rationals
 ##
 method ask_num ( Str $message=$!message,
-                 Num $default=$!default ) returns Num {
+                 $default=$!default ) returns Numeric {
 
-    my Num $result;
+    my Numeric $result;
     my Str $prompt = "{$message ?? "$message " !! ''}[{
-                       $default // $.lang_prompt_num}] ";
+                       $default // $.lang_prompt_rat}] ";
 
     loop {
-        my Str $response = self!do_prompt( $prompt );
+        my $response = self._do_prompt( $prompt );
 
-        given $response {
-            when /^^ <Perl6::Grammar::number> $$/
-                { $result = +$response }
+        my $possible_num = $response;
+        # if the response is a Numeric, all's fine. But if not
+        # I will get an exception that is catched in the 
+        # try block. If the response is a '' the coerce into Numeric
+        # would create a 0. So I have to skip then.
+        try { $possible_num = $response.Numeric } unless '' eq $response;
+        given $possible_num {
+            when $_ ~~ Numeric
+                { $result = $possible_num }
             when ''
-                { $result = $default }
+                { $result = $default // Nil }
             default
-                { $result = undef }
+                { $result = Nil }
         }
 
         last if defined $result;
-        last if not self!do_say( $.lang_prompt_num_retry );
+        last if not self._do_say( $.lang_prompt_rat_retry );
     }
  
-   return $result // Num;
+   return $result;
 }
 
 
@@ -193,29 +210,27 @@ method ask_num ( Str $message=$!message,
 ## (not sure if this is true...?) This is the default.
 ##
 method ask_str ( Str $message=$!message,
-                 Str $default=$!default ) returns Str {
+                 $default=$!default ) returns Str {
 
     my Str $result;
     my Str $prompt = "{$message ?? "$message " !! ''}[{
                        $default // $.lang_prompt_str}] ";
 
     loop {
-        my Str $response = self!do_prompt( $prompt );
+        my Str $response = self._do_prompt( $prompt );
 
         given $response {
             when ''
-                { $result = $default }
+                { $result = $default // '' }
             default
                 { $result = ~$response }
         }
 
         last if defined $result;
-        last if not self!do_say( $.lang_prompt_str_retry );
+        last if not self._do_say( $.lang_prompt_str_retry );
     }
  
    return $result // Str;
-}
-
 }
 
 # vim: ft=perl6

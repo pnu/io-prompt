@@ -3,3 +3,6 @@ Makefile
 *~
 *.swp
 make.log
+.precomp/
+test.p6
+*.swo
