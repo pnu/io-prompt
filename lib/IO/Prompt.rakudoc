@@ -1,3 +1,5 @@
+=begin pod
+
 =head1 NAME
 
 IO::Prompt -- Interactive validating terminal prompt
@@ -10,36 +12,28 @@ This document describes IO::Prompt version 0.0
 
 =head1 SYNOPSIS
 
+=begin code
     use IO::Prompt;
 
     my $n = ask('How many bananas?',7);
     say "You said $n bananas";
+=end code
 
-See F<example.p6> and F<lib/IO/Prompt.pm> for more
+See example.p6 and lib/IO/Prompt.rakumod for more
 examples of usage.
 
 =head1 DESCRIPTION
 
 This is a generic module for interactive prompting
-from the console. You can install it with proto:
+from the console. You can install it with zef:
 
-    $ cd ~/devel
-    $ git clone git://github.com/masak/proto.git
-    $ cd proto
-    $ ./proto
-    $ ./proto install io-prompt
-    $ cd ../io-prompt 
-
-    # I assume you have perl6 (rakudo) in your path
-
-    $ PERL6LIB=../proto/lib perl6 Configure.p6
-    $ make test
-    $ PERL6LIB=lib perl6 example.p6
-
+=begin code
+    $ zef install IO::Prompt
+=end code
 
 =head1 FUNCTIONAL INTERFACE
 
-The funtional interface is exported by default.
+The functional interface is exported by default.
 
 =over 4
 
@@ -175,3 +169,5 @@ RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
 FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
 SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGES.
+
+=end pod
